@@ -5,6 +5,10 @@
   <img src="https://img.shields.io/badge/代码-15%20行-ff69b4?style=flat-square">
 </p>
 
+<p align="center">
+  <b>中文</b> &nbsp;|&nbsp; <a href="README.md">English</a>
+</p>
+
 # codex-gui-proxy
 
 > **一行命令，让 macOS 上任意 Electron 应用走代理。不碰内核，不需要重签名，不需要沙箱。**

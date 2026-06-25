@@ -5,6 +5,10 @@
   <img src="https://img.shields.io/badge/size-15%20lines-ff69b4?style=flat-square" alt="size">
 </p>
 
+<p align="center">
+  <b>English</b> &nbsp;|&nbsp; <a href="README_CN.md">中文文档</a>
+</p>
+
 # codex-gui-proxy
 
 > **One command to proxy any Electron app on macOS. No kernel hooks, no re-signing, no sandbox hacks.**
