@@ -1,6 +1,6 @@
 # Forcing Codex.app Through a Proxy: The Five-Attempt Debugging Chronicle
 
-> Author: CTrailblazerX  
+> Author: ICYBLAZEK  
 > Date: 2026-06-25  
 > Tags: macOS, proxy, Electron, Chromium, network isolation
 
@@ -251,7 +251,7 @@ Usage:
 codex-proxy
 ```
 
-The complete, polished version (with `--proxy-url`, `CODEX_PROXY_URL`, and `--help`) is at [codex-gui-proxy](https://github.com/ctrailblazerx/codex-gui-proxy).
+The complete, polished version (with `--proxy-url`, `CODEX_PROXY_URL`, and `--help`) is at [codex-gui-proxy](https://github.com/icyblazek/codex-gui-proxy).
 
 ---
 
