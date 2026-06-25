@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Shell
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.orig
