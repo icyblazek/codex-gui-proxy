@@ -84,11 +84,13 @@ Chromium 网络栈原生支持 `--proxy-server`，无需 dylib 注入、无需�
 
 ## 特性
 
-- **零依赖** —— 只用了 macOS 自带的 `curl` 和 `bash`
-- **15 行代码** —— 30 秒就能读完
+- **零依赖** —— 只用了 macOS 自带的 `curl`、`bash`、`nc`
+- **15 行逻辑** —— 30 秒就能读完
+- **配置文件支持** —— `.env` 文件或 `~/.codex-proxy-launcher.env` 持久化配置
+- **重复启动检测** —— 如果 Codex 已运行会提示先退出再启动
 - **支持 SOCKS5** —— `socks5://127.0.0.1:1080` 直接可用
 - **IPC 安全** —— `--proxy-bypass-list="<-loopback>"` 保证本地流量直连
-- **健康检查** —— 启动前检测代理是否可达
+- **健康检查** —— 启动前检测代理端口是否在监听
 - **后台启动** —— `nohup` 启动，打印 PID
 
 ---
@@ -125,11 +127,37 @@ chmod +x codex-gui-proxy/codex-proxy.sh
 
 ## 配置
 
-| 方法 | 示例 |
-|------|------|
-| 环境变量 | `CODEX_PROXY_URL=socks5://127.0.0.1:1080 codex-proxy` |
-| 修改脚本 | 编辑第 12 行 `PROXY_URL="http://127.0.0.1:7898"` |
-| 命令行参数 | `codex-proxy --proxy-url socks5://127.0.0.1:7890` |
+### 推荐：配置文件
+
+创建 `~/.codex-proxy-launcher.env`（脚本更新也不丢失配置）：
+
+```bash
+cp codex-proxy-launcher.env.example ~/.codex-proxy-launcher.env
+nano ~/.codex-proxy-launcher.env
+```
+
+```env
+CODEX_PROXY_HOST=127.0.0.1
+CODEX_PROXY_PORT=7898
+```
+
+配置文件读取顺序（先读到的值优先）：
+
+| 优先级 | 路径 | 用途 |
+|--------|------|------|
+| 1 | `$CODEX_PROXY_CONFIG` | 指定路径 |
+| 2 | `./codex-proxy-launcher.env` | 工作目录 |
+| 3 | `~/.codex-proxy-launcher.env` | 用户级（推荐） |
+
+### 备选：命令行 / 环境变量
+
+```bash
+# 命令行参数
+codex-proxy --proxy-url socks5://127.0.0.1:1080
+
+# 环境变量
+CODEX_PROXY_URL=http://127.0.0.1:7890 codex-proxy
+```
 
 支持的协议：`http`、`https`、`socks4`、`socks5`、`quic`。
 
@@ -180,6 +208,19 @@ lsof -p $(pgrep -f 'Codex.app/Contents/MacOS/Codex') -i TCP
 ---
 
 ## 故障排查
+
+<details>
+<summary>Codex 已经在运行</summary>
+
+启动器检测到已有 Codex 进程在运行，拒绝启动第二个实例。
+完全退出 Codex（Cmd+Q），然后重新运行 `codex-proxy`，新实例才会继承代理设置。
+
+```bash
+# 必要时强制退出
+pkill -x Codex
+codex-proxy
+```
+</details>
 
 <details>
 <summary>提示 <code>WARNING: proxy unreachable</code></summary>

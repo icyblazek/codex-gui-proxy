@@ -85,11 +85,13 @@ Chromium's network stack natively supports `--proxy-server`. No dylib injection,
 
 ## Features
 
-* **Zero dependencies** — macOS built-ins only (`curl`, `bash`)
-* **15 lines** — read the whole thing in 30 seconds
+* **Zero dependencies** — macOS built-ins only (`curl`, `bash`, `nc`)
+* **15 lines of logic** — read the whole thing in 30 seconds
+* **Config file support** — `.env` file in repo or `~/.codex-proxy-launcher.env`
+* **Already-running detection** — warns if Codex is open (must restart for proxy)
 * **SOCKS5 support** — `socks5://127.0.0.1:1080` just works
 * **IPC-safe** — `--proxy-bypass-list="<-loopback>"` keeps local traffic direct
-* **Health check** — warns if proxy is unreachable before launching
+* **Health check** — verifies proxy is listening before launching
 * **Fire and forget** — `nohup` background launch, prints PID
 
 ---
@@ -126,11 +128,37 @@ chmod +x codex-gui-proxy/codex-proxy.sh
 
 ## Configuration
 
-| Method | Example |
-|--------|---------|
-| Environment variable | `CODEX_PROXY_URL=socks5://127.0.0.1:1080 codex-proxy` |
-| Edit the script | Change `PROXY_URL="http://127.0.0.1:7898"` on line 12 |
-| Command-line flag | `codex-proxy --proxy-url socks5://127.0.0.1:7890` |
+### Recommended: Config file
+
+Create `~/.codex-proxy-launcher.env` (survives script updates):
+
+```bash
+cp codex-proxy-launcher.env.example ~/.codex-proxy-launcher.env
+nano ~/.codex-proxy-launcher.env
+```
+
+```env
+CODEX_PROXY_HOST=127.0.0.1
+CODEX_PROXY_PORT=7898
+```
+
+Config files are read in order (first set value wins):
+
+| Priority | Path | Purpose |
+|----------|------|---------|
+| 1 | `$CODEX_PROXY_CONFIG` | Explicit path |
+| 2 | `./codex-proxy-launcher.env` | Working directory |
+| 3 | `~/.codex-proxy-launcher.env` | User-level (recommended) |
+
+### Alternative: CLI / env var
+
+```bash
+# Command-line flag
+codex-proxy --proxy-url socks5://127.0.0.1:1080
+
+# Environment variable
+CODEX_PROXY_URL=http://127.0.0.1:7890 codex-proxy
+```
 
 Supported schemes: `http`, `https`, `socks4`, `socks5`, `quic`.
 
@@ -181,6 +209,20 @@ Tested and confirmed working with any Chromium/Electron app:
 ---
 
 ## Troubleshooting
+
+<details>
+<summary>Codex is already running</summary>
+
+The launcher detects an existing Codex process and refuses to start a second one.
+Quit Codex completely (Cmd+Q), then re-run `codex-proxy` so the new instance
+inherits the proxy settings.
+
+```bash
+# Force-quit if needed
+pkill -x Codex
+codex-proxy
+```
+</details>
 
 <details>
 <summary><code>WARNING: proxy unreachable</code></summary>
